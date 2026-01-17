@@ -1,6 +1,10 @@
-import { displayName } from "../utils/player";
-
-export default function GameFinished({ onlinePlayers, playerId, resetRoom }) {
+export default function GameFinished({
+  onlinePlayers,
+  playerName,
+  resetRoom,
+  isGameMaster,
+  leaveRoom,
+}) {
   const maxScore = Math.max(...onlinePlayers.map((p) => p.score));
   const winners = onlinePlayers.filter((p) => p.score === maxScore);
 
@@ -9,26 +13,31 @@ export default function GameFinished({ onlinePlayers, playerId, resetRoom }) {
       <h2>Game Finished</h2>
 
       {winners.length === 1 ? (
-        <h3>Winner: {displayName(winners[0].id, playerId)}</h3>
+        <h3>Winner: {winners[0].name}</h3>
       ) : (
         <>
           <h3>Draw!</h3>
           <ul>
             {winners.map((w) => (
-              <li key={w.id}>{displayName(w.id, playerId)}</li>
+              <li key={w.id}>{w.name}</li>
             ))}
           </ul>
         </>
       )}
 
-      <h4>Final Score (Online Players)</h4>
-      {onlinePlayers.map((p) => (
-        <p key={p.id}>
-          {displayName(p.id, playerId)} : {p.score}
-        </p>
-      ))}
+      <h4>Final Score</h4>
+      {onlinePlayers
+        .sort((a, b) => b.score - a.score)
+        .map((p) => (
+          <p key={p.id}>
+            {p.name}: {p.score}
+          </p>
+        ))}
 
-      <button onClick={resetRoom}>Rematch</button>
+      {isGameMaster && <button onClick={resetRoom}>Rematch</button>}
+      <button onClick={leaveRoom} style={{ marginLeft: 8 }}>
+        Leave Room
+      </button>
     </div>
   );
 }

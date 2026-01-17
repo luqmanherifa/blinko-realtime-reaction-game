@@ -1,14 +1,27 @@
-import { displayName } from "../utils/player";
-
-export default function WaitingRoom({ onlinePlayers, playerId, startGame }) {
+export default function WaitingRoom({
+  room,
+  onlinePlayers,
+  playerName,
+  startGame,
+  isGameMaster,
+  leaveRoom,
+}) {
   return (
     <div style={{ padding: 24 }}>
-      <h3>Waiting Room</h3>
-      <button onClick={startGame}>Start Game</button>
+      <h2>{room.roomName}</h2>
+      <h3>Room Code: {room.code}</h3>
+      <p>Share this code with your friends!</p>
 
-      <h4>Players Online</h4>
+      {isGameMaster && <button onClick={startGame}>Start Game</button>}
+      <button onClick={leaveRoom} style={{ marginLeft: 8 }}>
+        Leave Room
+      </button>
+
+      <h4>Players Online ({onlinePlayers.length})</h4>
       {onlinePlayers.map((p) => (
-        <p key={p.id}>{displayName(p.id, playerId)}</p>
+        <p key={p.id}>
+          {p.name} {p.id === playerName && "(You)"} {p.isGameMaster && "(Host)"}
+        </p>
       ))}
     </div>
   );
