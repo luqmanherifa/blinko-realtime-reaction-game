@@ -1,4 +1,3 @@
-export const ROOM_ID = "room-demo";
 export const QUESTION_DURATION = 5000;
 export const ONLINE_THRESHOLD = 5000;
 export const HEARTBEAT_INTERVAL = 3000;
