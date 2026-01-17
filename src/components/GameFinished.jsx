@@ -1,3 +1,5 @@
+import { CrownIcon, PlayIcon, ExitIcon } from "./icons";
+
 export default function GameFinished({
   onlinePlayers,
   playerName,
@@ -10,52 +12,100 @@ export default function GameFinished({
   const sortedPlayers = [...onlinePlayers].sort((a, b) => b.score - a.score);
 
   return (
-    <div className="h-screen bg-white flex flex-col p-6">
-      <div className="flex-1 flex flex-col">
-        <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-          Game Selesai!
-        </h2>
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="w-full max-w-md flex flex-col h-[90vh]">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-black text-crimsondeep mb-2">
+            Game Selesai!
+          </h1>
+          <p className="text-rosebold text-base">Hasil pertandingan</p>
+        </div>
 
+        {/* Winner Box */}
         {winners.length === 1 ? (
-          <div className="bg-yellow-400 rounded-2xl p-8 mb-8">
-            <p className="text-white text-lg mb-2 text-center">🏆 Pemenang</p>
-            <p className="text-white text-3xl font-bold text-center">
-              {winners[0].name}
-            </p>
+          <div className="bg-rosebold border-b-4 border-crimsondeep rounded-2xl p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CrownIcon className="w-10 h-10 text-white" />
+                <div>
+                  <p className="text-white text-sm font-bold">Pemenang</p>
+                  <p className="text-white text-2xl font-black">
+                    {winners[0].name}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl px-4 py-2">
+                <p className="text-crimsondeep text-xl font-black">
+                  {winners[0].score}
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="bg-orange-400 rounded-2xl p-8 mb-8">
-            <p className="text-white text-lg mb-3 text-center">🤝 Seri!</p>
+          <div className="bg-rosesoft border-b-4 border-rosebold rounded-2xl p-5 mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <CrownIcon className="w-8 h-8 text-white" />
+              <p className="text-white text-base font-bold">Hasil Seri!</p>
+            </div>
             <div className="space-y-2">
               {winners.map((w) => (
-                <p
+                <div
                   key={w.id}
-                  className="text-white text-2xl font-bold text-center"
+                  className="bg-white rounded-xl p-3 flex items-center justify-between"
                 >
-                  {w.name}
-                </p>
+                  <p className="text-crimsondeep text-base font-black">
+                    {w.name}
+                  </p>
+                  <p className="text-crimsondeep text-lg font-black">
+                    {w.score}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <h4 className="font-bold text-gray-700 text-xl mb-4">Skor Akhir</h4>
-          <div className="flex-1 overflow-y-auto space-y-3 mb-6">
+        {/* Final Scores */}
+        <div className="flex-1 overflow-hidden flex flex-col mb-6">
+          <h4 className="font-bold text-crimsondeep text-lg mb-4">
+            Skor Akhir
+          </h4>
+          <div className="flex-1 overflow-y-auto space-y-3">
             {sortedPlayers.map((p, index) => (
               <div
                 key={p.id}
-                className="bg-gray-50 rounded-xl p-5 flex items-center justify-between"
+                className={`rounded-2xl p-4 flex items-center justify-between border-b-4 ${
+                  index === 0
+                    ? "bg-rosebold border-crimsondeep"
+                    : index === 1
+                      ? "bg-rosesoft border-rosebold"
+                      : index === 2
+                        ? "bg-blushlight border-rosesoft"
+                        : "bg-white border-2 border-rosesoft"
+                }`}
               >
-                <div className="flex items-center gap-4">
-                  <span className="text-3xl font-bold text-gray-400">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`text-2xl font-black ${
+                      index < 3 ? "text-white" : "text-rosebold"
+                    }`}
+                  >
                     #{index + 1}
                   </span>
-                  <span className="font-bold text-gray-800 text-lg">
+                  <span
+                    className={`font-bold text-base ${
+                      index < 3 ? "text-white" : "text-crimsondeep"
+                    }`}
+                  >
                     {p.name}
                   </span>
                 </div>
-                <span className="text-2xl font-bold text-gray-800">
+                <span
+                  className={`text-xl font-black ${
+                    index < 3 ? "text-white" : "text-crimsondeep"
+                  }`}
+                >
                   {p.score}
                 </span>
               </div>
@@ -63,19 +113,22 @@ export default function GameFinished({
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="space-y-3">
           {isGameMaster && (
             <button
               onClick={resetRoom}
-              className="w-full bg-green-500 text-white py-5 rounded-2xl font-bold text-xl"
+              className="w-full bg-rosebold text-white py-4 rounded-2xl font-bold text-base hover:bg-rosesoft active:bg-crimsondeep transition-colors border-b-4 border-crimsondeep flex items-center justify-center gap-2"
             >
+              <PlayIcon className="w-5 h-5" />
               Main Lagi
             </button>
           )}
           <button
             onClick={leaveRoom}
-            className="w-full bg-red-500 text-white py-5 rounded-2xl font-bold text-xl"
+            className="w-full bg-white text-crimsondeep py-4 rounded-2xl font-bold text-base hover:bg-blushlight active:bg-rosesoft transition-colors border-2 border-rosesoft flex items-center justify-center gap-2"
           >
+            <ExitIcon className="w-5 h-5" />
             Keluar
           </button>
         </div>
