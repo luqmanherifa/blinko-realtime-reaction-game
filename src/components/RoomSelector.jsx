@@ -1,11 +1,18 @@
 import { useState } from "react";
+import { PlusIcon, JoinIcon, TrophyIcon } from "./icons";
 
-export default function RoomSelector({ playerName, onCreateRoom, onJoinRoom }) {
+export default function RoomSelector({
+  playerName,
+  onCreateRoom,
+  onJoinRoom,
+  onShowLeaderboard,
+}) {
   const [roomCode, setRoomCode] = useState("");
   const [roomName, setRoomName] = useState("");
   const [createRoomCode, setCreateRoomCode] = useState("");
   const [errorCreate, setErrorCreate] = useState("");
   const [errorJoin, setErrorJoin] = useState("");
+  const [activeTab, setActiveTab] = useState("create");
 
   const handleCreateRoom = () => {
     setErrorCreate("");
@@ -40,19 +47,66 @@ export default function RoomSelector({ playerName, onCreateRoom, onJoinRoom }) {
   };
 
   return (
-    <div className="h-screen bg-white flex flex-col p-6">
-      <div className="flex-1 flex flex-col justify-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          Halo, {playerName}!
-        </h2>
-        <p className="text-gray-600 text-lg mb-10">
-          Pilih untuk buat atau gabung ruangan
-        </p>
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Buat Ruangan Baru
-            </h3>
+    <div className="min-h-screen bg-white flex flex-col p-6">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-black text-crimsondeep">
+            Halo, {playerName}!
+          </h2>
+          <p className="text-rosebold text-sm">Pilih mode permainan</p>
+        </div>
+        <button
+          onClick={onShowLeaderboard}
+          className="w-12 h-12 bg-rosesoft rounded-2xl flex items-center justify-center border-b-4 border-rosebold hover:bg-blushlight active:bg-rosebold transition-colors"
+        >
+          <TrophyIcon className="w-6 h-6 text-white" />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-sm">
+          {/* Tab Switcher */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => {
+                setActiveTab("create");
+                setErrorCreate("");
+                setErrorJoin("");
+              }}
+              className={`flex-1 py-3 rounded-2xl font-bold text-base transition-colors border-b-4 ${
+                activeTab === "create"
+                  ? "bg-rosebold text-white border-crimsondeep"
+                  : "bg-blushlight text-rosebold border-rosesoft"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <PlusIcon className="w-5 h-5" />
+                <span>Buat</span>
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("join");
+                setErrorCreate("");
+                setErrorJoin("");
+              }}
+              className={`flex-1 py-3 rounded-2xl font-bold text-base transition-colors border-b-4 ${
+                activeTab === "join"
+                  ? "bg-rosebold text-white border-crimsondeep"
+                  : "bg-blushlight text-rosebold border-rosesoft"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <JoinIcon className="w-5 h-5" />
+                <span>Gabung</span>
+              </div>
+            </button>
+          </div>
+
+          {/* Create Room Form */}
+          {activeTab === "create" && (
             <div className="space-y-4">
               <input
                 type="text"
@@ -62,7 +116,7 @@ export default function RoomSelector({ playerName, onCreateRoom, onJoinRoom }) {
                   setRoomName(e.target.value);
                   setErrorCreate("");
                 }}
-                className="w-full px-6 py-5 text-xl border-2 border-gray-300 rounded-2xl focus:border-gray-800 outline-none"
+                className="w-full px-5 py-4 text-base border-2 border-rosesoft rounded-2xl focus:border-rosebold outline-none transition-colors"
               />
               <input
                 type="text"
@@ -72,55 +126,48 @@ export default function RoomSelector({ playerName, onCreateRoom, onJoinRoom }) {
                   setCreateRoomCode(e.target.value);
                   setErrorCreate("");
                 }}
-                className="w-full px-6 py-5 text-xl border-2 border-gray-300 rounded-2xl uppercase focus:border-gray-800 outline-none"
+                className="w-full px-5 py-4 text-base border-2 border-rosesoft rounded-2xl focus:border-rosebold outline-none transition-colors uppercase placeholder:normal-case"
               />
               {errorCreate && (
-                <p className="text-red-500 text-sm px-2">{errorCreate}</p>
+                <p className="text-crimsondeep text-sm font-bold px-2">
+                  {errorCreate}
+                </p>
               )}
               <button
                 onClick={handleCreateRoom}
-                className="w-full bg-purple-500 text-white py-5 rounded-2xl font-bold text-xl"
+                className="w-full bg-rosebold text-white py-4 rounded-2xl font-bold text-base hover:bg-rosesoft active:bg-crimsondeep transition-colors border-b-4 border-crimsondeep"
               >
                 Buat Ruangan
               </button>
             </div>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-lg">
-              <span className="px-4 bg-white text-gray-500 font-medium">
-                atau
-              </span>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Gabung Ruangan
-            </h3>
+          )}
+
+          {/* Join Room Form */}
+          {activeTab === "join" && (
             <div className="space-y-4">
               <input
                 type="text"
-                placeholder="Kode ruangan"
+                placeholder="Masukkan kode ruangan"
                 value={roomCode}
                 onChange={(e) => {
                   setRoomCode(e.target.value);
                   setErrorJoin("");
                 }}
-                className="w-full px-6 py-5 text-xl border-2 border-gray-300 rounded-2xl uppercase focus:border-gray-800 outline-none"
+                className="w-full px-5 py-4 text-base border-2 border-rosesoft rounded-2xl focus:border-rosebold outline-none transition-colors uppercase placeholder:normal-case"
               />
               {errorJoin && (
-                <p className="text-red-500 text-sm px-2">{errorJoin}</p>
+                <p className="text-crimsondeep text-sm font-bold px-2">
+                  {errorJoin}
+                </p>
               )}
               <button
                 onClick={handleJoinRoom}
-                className="w-full bg-pink-500 text-white py-5 rounded-2xl font-bold text-xl"
+                className="w-full bg-rosebold text-white py-4 rounded-2xl font-bold text-base hover:bg-rosesoft active:bg-crimsondeep transition-colors border-b-4 border-crimsondeep"
               >
-                Gabung
+                Gabung Ruangan
               </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

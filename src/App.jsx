@@ -172,30 +172,19 @@ export default function App() {
 
   if (!roomCode) {
     return (
-      <div className="h-screen bg-white flex flex-col">
-        <div className="flex-1">
-          <RoomSelector
-            playerName={playerName}
-            onCreateRoom={handleCreateRoom}
-            onJoinRoom={handleJoinRoom}
-          />
-        </div>
-        <div className="p-6">
-          <button
-            onClick={() => setShowLeaderboard(true)}
-            className="w-full bg-green-500 text-white py-5 rounded-2xl font-bold text-xl"
-          >
-            🏆 Lihat Leaderboard
-          </button>
-        </div>
-      </div>
+      <RoomSelector
+        playerName={playerName}
+        onCreateRoom={handleCreateRoom}
+        onJoinRoom={handleJoinRoom}
+        onShowLeaderboard={() => setShowLeaderboard(true)}
+      />
     );
   }
 
   if (!room) {
     return (
-      <div className="h-screen bg-white flex items-center justify-center">
-        <p className="text-gray-600 text-xl">Memuat ruangan...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-slate-600 text-base">Memuat ruangan...</p>
       </div>
     );
   }

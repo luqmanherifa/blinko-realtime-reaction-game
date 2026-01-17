@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { getRandomColorPair } from "../utils/player";
+import { SmileIcon, EditIcon } from "./icons";
 
 export default function LoginForm({ onLogin, existingName }) {
   const [playerName, setPlayerName] = useState("");
   const [isRenaming, setIsRenaming] = useState(false);
-  const [colors] = useState(getRandomColorPair());
 
   useEffect(() => {
     if (existingName) {
@@ -19,68 +18,83 @@ export default function LoginForm({ onLogin, existingName }) {
   };
 
   return (
-    <div className="h-screen bg-white flex flex-col justify-center p-6">
-      <div className="flex-1 flex flex-col justify-center">
-        <h1 className={`text-5xl font-bold ${colors.text} mb-3 text-center`}>
-          Trivia Game
-        </h1>
-        <p className="text-gray-600 text-xl mb-12 text-center">
-          Ayo main kuis bareng teman-teman!
-        </p>
-        <div className="space-y-6">
-          <div>
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        {/* Logo/Icon */}
+        <div className="flex justify-center mb-8">
+          <div className="w-20 h-20 bg-rosebold rounded-3xl flex items-center justify-center border-b-4 border-crimsondeep">
+            <SmileIcon className="w-11 h-11 text-white" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-black text-crimsondeep mb-2">
+            Trivia Game
+          </h1>
+          <p className="text-rosebold text-base">
+            Main kuis bareng teman-teman
+          </p>
+        </div>
+
+        {/* Input Field */}
+        <div className="mb-4">
+          <div className="relative">
             <input
               type="text"
-              placeholder="Masukkan nama"
+              placeholder="Nama kamu"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
               disabled={existingName && !isRenaming}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit();
               }}
-              className={`w-full px-6 py-5 text-xl border-2 border-gray-300 rounded-2xl focus:border-gray-800 outline-none ${
-                existingName && !isRenaming ? "bg-gray-100 text-gray-700" : ""
+              className={`w-full px-5 py-4 text-base border-2 rounded-2xl outline-none transition-colors ${
+                existingName && !isRenaming
+                  ? "bg-white border-rosesoft text-crimsondeep"
+                  : "bg-white border-rosesoft focus:border-rosebold"
               }`}
             />
-          </div>
-
-          {existingName && !isRenaming ? (
-            <div className="space-y-3">
-              <button
-                onClick={handleSubmit}
-                className={`w-full ${colors.primary} text-white py-5 rounded-2xl font-bold text-xl`}
-              >
-                Lanjut
-              </button>
+            {existingName && !isRenaming && (
               <button
                 onClick={() => setIsRenaming(true)}
-                className="w-full bg-gray-500 text-white py-5 rounded-2xl font-bold text-xl"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-aquamist rounded-xl transition-colors"
               >
-                Ganti Nama
+                <EditIcon className="w-5 h-5 text-rosesoft" />
               </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <button
-                onClick={handleSubmit}
-                className={`w-full ${colors.primary} text-white py-5 rounded-2xl font-bold text-xl`}
-              >
-                {existingName && isRenaming ? "Simpan Nama Baru" : "Lanjut"}
-              </button>
-              {existingName && isRenaming && (
-                <button
-                  onClick={() => {
-                    setPlayerName(existingName);
-                    setIsRenaming(false);
-                  }}
-                  className="w-full bg-gray-300 text-gray-700 py-5 rounded-2xl font-bold text-xl"
-                >
-                  Batal
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* Action Buttons */}
+        {existingName && !isRenaming ? (
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-rosebold text-white py-4 rounded-2xl font-bold text-base hover:bg-rosesoft active:bg-crimsondeep transition-colors border-b-4 border-crimsondeep"
+          >
+            Lanjut
+          </button>
+        ) : (
+          <div className="space-y-3">
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-rosebold text-white py-4 rounded-2xl font-bold text-base hover:bg-rosesoft active:bg-crimsondeep transition-colors border-b-4 border-crimsondeep"
+            >
+              {existingName && isRenaming ? "Simpan" : "Mulai"}
+            </button>
+            {existingName && isRenaming && (
+              <button
+                onClick={() => {
+                  setPlayerName(existingName);
+                  setIsRenaming(false);
+                }}
+                className="w-full bg-white text-rosebold py-4 rounded-2xl font-bold text-base hover:bg-aquamist active:bg-blushlight transition-colors border-2 border-rosesoft"
+              >
+                Batal
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
