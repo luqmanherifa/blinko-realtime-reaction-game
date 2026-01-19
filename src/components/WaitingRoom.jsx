@@ -22,7 +22,7 @@ export default function WaitingRoom({
       <div className="w-full max-w-md flex flex-col h-[90vh]">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-indigospark mb-2">
+          <h1 className="text-2xl font-extrabold text-indigospark mb-2">
             {room.roomName}
           </h1>
           <p className="text-indigoflow text-base">Ruang tunggu</p>
@@ -34,7 +34,7 @@ export default function WaitingRoom({
             Kode Ruangan
           </p>
           <div className="flex items-center justify-between gap-3 mb-3">
-            <p className="text-4xl font-black text-indigospark tracking-wider">
+            <p className="text-2xl font-extrabold text-indigospark tracking-wider">
               {room.code}
             </p>
             <button

@@ -16,7 +16,7 @@ export default function GameFinished({
       <div className="w-full max-w-md flex flex-col h-[90vh]">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-indigospark mb-2">
+          <h1 className="text-2xl font-extrabold text-indigospark mb-2">
             Game Selesai!
           </h1>
           <p className="text-indigoflow text-base">Hasil pertandingan</p>
@@ -30,13 +30,13 @@ export default function GameFinished({
                 <CrownIcon className="w-10 h-10 text-yellowpulse" />
                 <div>
                   <p className="text-indigoflow text-sm font-bold">Pemenang</p>
-                  <p className="text-indigospark text-2xl font-black">
+                  <p className="text-indigospark text-2xl font-extrabold">
                     {winners[0].name}
                   </p>
                 </div>
               </div>
               <div className="bg-yellowpulse/30 rounded-xl px-4 py-2 border-2 border-yellowpulse/50">
-                <p className="text-indigospark text-xl font-black">
+                <p className="text-indigospark text-xl font-extrabold">
                   {winners[0].score}
                 </p>
               </div>
@@ -56,10 +56,10 @@ export default function GameFinished({
                   key={w.id}
                   className="bg-white border-2 border-slate-200 rounded-xl p-3 flex items-center justify-between"
                 >
-                  <p className="text-indigospark text-base font-black">
+                  <p className="text-indigospark text-base font-extrabold">
                     {w.name}
                   </p>
-                  <p className="text-indigospark text-lg font-black">
+                  <p className="text-indigospark text-lg font-extrabold">
                     {w.score}
                   </p>
                 </div>
@@ -82,7 +82,7 @@ export default function GameFinished({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span
-                      className={`text-xl font-black ${
+                      className={`text-xl font-extrabold ${
                         index < 3 ? "text-yellowpulse" : "text-indigospark"
                       }`}
                     >
@@ -92,7 +92,7 @@ export default function GameFinished({
                       {p.name}
                     </span>
                   </div>
-                  <span className="text-lg font-black text-indigospark">
+                  <span className="text-lg font-extrabold text-indigospark">
                     {p.score}
                   </span>
                 </div>

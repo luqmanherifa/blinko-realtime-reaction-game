@@ -8,7 +8,7 @@ export default function Leaderboard({ players, onBack }) {
       <div className="w-full max-w-md flex flex-col h-[90vh]">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-indigospark mb-2">
+          <h1 className="text-2xl font-extrabold text-indigospark mb-2">
             Leaderboard
           </h1>
           <p className="text-indigoflow text-base">Peringkat pemain terbaik</p>
@@ -30,7 +30,7 @@ export default function Leaderboard({ players, onBack }) {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className="text-xl font-black flex-shrink-0 text-indigospark">
+                    <span className="text-xl font-extrabold flex-shrink-0 text-indigospark">
                       #{index + 1}
                     </span>
                     <div className="min-w-0 flex-1">

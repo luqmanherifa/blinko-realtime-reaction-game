@@ -21,7 +21,7 @@ export default function PlayingGame({
       <div className="bg-white px-6 py-4 flex items-center justify-between border-b-2 border-slate-200">
         <div className="flex items-center gap-2.5">
           <div className="bg-yellowpulse w-10 h-10 rounded-xl flex items-center justify-center">
-            <span className="text-base font-black text-white">
+            <span className="text-base font-extrabold text-white">
               #{myPosition}
             </span>
           </div>
@@ -29,7 +29,7 @@ export default function PlayingGame({
             <p className="text-slate-500 text-xs font-bold leading-tight">
               Skor Kamu
             </p>
-            <p className="text-indigospark text-xl font-black leading-tight">
+            <p className="text-indigospark text-xl font-extrabold leading-tight">
               {myScore}
             </p>
           </div>
@@ -44,7 +44,7 @@ export default function PlayingGame({
           <TimerIcon
             className={`w-4 h-4 ${isLowTime ? "text-white" : "text-yellowpulse"}`}
           />
-          <span className="font-black text-xl text-white">{timeLeft}</span>
+          <span className="font-extrabold text-xl text-white">{timeLeft}</span>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export default function PlayingGame({
 
           {/* Question */}
           <div className="bg-white border-2 border-slate-200 rounded-3xl px-6 py-12">
-            <h3 className="text-2xl font-black text-indigospark text-center leading-snug">
+            <h3 className="text-2xl font-extrabold text-indigospark text-center leading-snug">
               {q.q}
             </h3>
           </div>
@@ -91,7 +91,7 @@ export default function PlayingGame({
                     </span>
                   </div>
                   <span
-                    className={`text-sm font-black ${
+                    className={`text-sm font-extrabold ${
                       p.id === playerName
                         ? "text-indigospark"
                         : "text-slate-700"

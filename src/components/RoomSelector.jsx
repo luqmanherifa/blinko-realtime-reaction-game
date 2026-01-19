@@ -51,7 +51,7 @@ export default function RoomSelector({
       {/* Header */}
       <div className="flex items-start justify-between mb-10">
         <div>
-          <h2 className="text-4xl font-black text-indigospark mb-2">
+          <h2 className="text-2xl font-extrabold text-indigospark mb-2">
             Halo, {playerName}!
           </h2>
           <p className="text-indigoflow text-base">Pilih mode permainan</p>
