@@ -59,7 +59,7 @@ export default function WaitingRoom({
           <div className="flex items-center gap-2 mb-4">
             <UserIcon className="w-5 h-5 text-indigospark" />
             <h4 className="font-bold text-indigospark text-base">
-              Pemain Online ({onlinePlayers.length})
+              Sedang Bergabung ({onlinePlayers.length})
             </h4>
           </div>
           <div className="flex-1 overflow-y-auto space-y-2">

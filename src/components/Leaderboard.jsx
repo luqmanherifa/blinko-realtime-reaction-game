@@ -38,7 +38,7 @@ export default function Leaderboard({ players, onBack }) {
                         {player.name}
                       </span>
                       <span className="text-xs font-medium block text-slate-500">
-                        {player.gamesPlayed} game •{" "}
+                        {player.gamesPlayed} ronde •{" "}
                         {new Date(player.lastPlayed).toLocaleDateString(
                           "id-ID",
                           {
@@ -49,13 +49,16 @@ export default function Leaderboard({ players, onBack }) {
                       </span>
                     </div>
                   </div>
-                  <div className="text-lg font-bold flex items-center gap-1.5 flex-shrink-0 ml-2 text-indigospark">
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2 text-indigospark">
+                    <span className="text-lg font-bold tabular-nums">
+                      {player.totalWins}
+                    </span>
+
                     <CrownIcon
                       className={`w-5 h-5 ${
-                        index < 3 ? "text-yellowpulse" : "text-indigospark/50"
+                        index < 3 ? "text-yellowpulse" : "text-indigospark/40"
                       }`}
                     />
-                    {player.totalWins}
                   </div>
                 </div>
               </div>

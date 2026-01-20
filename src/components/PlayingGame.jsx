@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import { TrophyIcon } from "./icons";
 import { QUESTIONS, QUESTION_DURATION } from "../constants";
 
 export default function PlayingGame({
@@ -47,10 +48,9 @@ export default function PlayingGame({
     <div className="min-h-screen bg-white flex flex-col">
       {/* Leaderboard */}
       <div className="border-b border-slate-200 px-6 py-4 bg-white">
-        <div className="flex items-center gap-2 mb-3">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-            Klasemen
-          </p>
+        <div className="flex items-center gap-2 mb-3 text-xs font-bold text-slate-500 uppercase tracking-wide">
+          <TrophyIcon className="w-4 h-4 text-yellowpulse" />
+          <span className="mt-[4px]">Klasemen</span>
         </div>
 
         <div className="max-h-28 overflow-y-auto space-y-1.5 pr-1">
