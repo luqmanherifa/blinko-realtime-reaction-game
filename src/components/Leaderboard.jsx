@@ -7,7 +7,7 @@ export default function Leaderboard({ players, onBack }) {
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="w-full max-w-md flex flex-col h-[90vh]">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h1 className="text-2xl font-extrabold font-heading text-indigospark mb-2">
             Papan Peringkat
           </h1>
@@ -17,7 +17,7 @@ export default function Leaderboard({ players, onBack }) {
         </div>
 
         {/* Leaderboard List */}
-        <div className="flex-1 overflow-y-auto space-y-2 mb-6">
+        <div className="flex-1 overflow-y-auto space-y-2 mb-10">
           {sortedPlayers.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-indigospark/50 text-base">

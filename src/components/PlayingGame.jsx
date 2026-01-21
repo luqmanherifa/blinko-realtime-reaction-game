@@ -127,7 +127,7 @@ export default function PlayingGame({
         </div>
 
         {/* Question */}
-        <div className="text-center space-y-2 mb-10">
+        <div className="text-center space-y-2 mb-8">
           <p className="text-xs font-bold font-heading text-slate-400 uppercase tracking-wide">
             Soal {room.currentQuestion + 1} / {QUESTIONS.length}
           </p>

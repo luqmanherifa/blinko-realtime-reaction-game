@@ -49,7 +49,7 @@ export default function RoomSelector({
   return (
     <div className="min-h-screen bg-white flex flex-col p-6">
       {/* Header */}
-      <div className="flex items-start justify-between mb-10">
+      <div className="flex items-start justify-between mb-8">
         <div>
           <h2 className="text-2xl font-extrabold font-heading text-indigospark mb-2">
             Halo, {playerName}!

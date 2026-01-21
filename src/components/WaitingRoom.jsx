@@ -21,7 +21,7 @@ export default function WaitingRoom({
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="w-full max-w-md flex flex-col h-[90vh]">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h1 className="text-2xl font-extrabold font-heading text-indigospark mb-2">
             {room.roomName}
           </h1>
@@ -64,7 +64,7 @@ export default function WaitingRoom({
             {onlinePlayers.map((p) => (
               <div
                 key={p.id}
-                className="bg-white border-2 border-slate-200 rounded-2xl p-3.5 flex items-center justify-between"
+                className="bg-white border-2 border-slate-200 rounded-2xl px-5 py-3 flex items-center justify-between"
               >
                 <span className="font-bold font-heading text-indigospark text-base">
                   {p.name}
