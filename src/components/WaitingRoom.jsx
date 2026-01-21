@@ -25,7 +25,7 @@ export default function WaitingRoom({
           <h1 className="text-2xl font-extrabold font-heading text-indigospark mb-2">
             {room.roomName}
           </h1>
-          <p className="text-indigoflow/50 text-base">Arena tunggu</p>
+          <p className="text-indigoflow/50 text-base">Ruang tunggu</p>
         </div>
 
         {/* Room Code */}
