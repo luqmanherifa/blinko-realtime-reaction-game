@@ -15,6 +15,7 @@ import {
   HEARTBEAT_INTERVAL,
   QUESTIONS,
 } from "../constants";
+import { shuffleArray } from "../utils/shuffle";
 
 export function useGameLogic(roomCode, playerName) {
   const [room, setRoom] = useState(null);
@@ -23,6 +24,7 @@ export function useGameLogic(roomCode, playerName) {
   const [answered, setAnswered] = useState(false);
   const [answeredQuestion, setAnsweredQuestion] = useState(null);
   const [now, setNow] = useState(Date.now());
+  const [shuffledQuestions, setShuffledQuestions] = useState(QUESTIONS);
 
   useEffect(() => {
     if (!roomCode || !playerName) return;
@@ -56,7 +58,15 @@ export function useGameLogic(roomCode, playerName) {
 
     return onSnapshot(doc(db, "rooms", roomCode), (snap) => {
       if (!snap.exists()) return;
-      setRoom(snap.data());
+      const roomData = snap.data();
+      setRoom(roomData);
+
+      if (roomData.shuffledQuestionIndexes) {
+        const shuffled = roomData.shuffledQuestionIndexes.map(
+          (idx) => QUESTIONS[idx],
+        );
+        setShuffledQuestions(shuffled);
+      }
     });
   }, [roomCode]);
 
@@ -128,12 +138,18 @@ export function useGameLogic(roomCode, playerName) {
   }, [timeLeft, room, roomCode, onlinePlayers]);
 
   const startGame = async () => {
+    const shuffled = shuffleArray(QUESTIONS);
+    const shuffledIndexes = shuffled.map((q) => QUESTIONS.indexOf(q));
+
     await updateDoc(doc(db, "rooms", roomCode), {
       status: "playing",
       currentQuestion: 0,
       questionStartAt: Date.now(),
       advanceLock: false,
+      shuffledQuestionIndexes: shuffledIndexes,
     });
+
+    setShuffledQuestions(shuffled);
   };
 
   const resetRoom = async () => {
@@ -141,11 +157,14 @@ export function useGameLogic(roomCode, playerName) {
       status: "waiting",
       currentQuestion: 0,
       questionStartAt: null,
+      shuffledQuestionIndexes: null,
     });
 
     players.forEach((p) => {
       updateDoc(doc(db, "rooms", roomCode, "players", p.id), { score: 0 });
     });
+
+    setShuffledQuestions(QUESTIONS);
   };
 
   const answer = async (value) => {
@@ -154,7 +173,7 @@ export function useGameLogic(roomCode, playerName) {
     setAnswered(true);
     setAnsweredQuestion(room.currentQuestion);
 
-    const current = QUESTIONS[room.currentQuestion];
+    const current = shuffledQuestions[room.currentQuestion];
     if (value === current.correct) {
       await updateDoc(doc(db, "rooms", roomCode, "players", playerName), {
         score: increment(1),
@@ -171,6 +190,7 @@ export function useGameLogic(roomCode, playerName) {
     onlinePlayers,
     timeLeft,
     answered: isAnsweredCurrentQuestion,
+    shuffledQuestions,
     startGame,
     resetRoom,
     answer,

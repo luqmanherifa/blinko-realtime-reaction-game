@@ -35,6 +35,7 @@ export default function App() {
     onlinePlayers,
     timeLeft,
     answered,
+    shuffledQuestions,
     startGame,
     resetRoom,
     answer,
@@ -123,6 +124,7 @@ export default function App() {
         status: "waiting",
         currentQuestion: 0,
         questionStartAt: null,
+        shuffledQuestionIndexes: null,
         createdAt: Date.now(),
       });
 
@@ -221,6 +223,7 @@ export default function App() {
       playerName={playerName}
       timeLeft={timeLeft}
       answered={answered}
+      shuffledQuestions={shuffledQuestions}
       answer={answer}
     />
   );

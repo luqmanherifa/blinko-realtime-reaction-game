@@ -9,9 +9,10 @@ export default function PlayingGame({
   playerName,
   timeLeft,
   answered,
+  shuffledQuestions,
   answer,
 }) {
-  const q = QUESTIONS[room.currentQuestion];
+  const q = shuffledQuestions[room.currentQuestion];
   const sortedPlayers = [...onlinePlayers].sort((a, b) => b.score - a.score);
   const progressMV = useMotionValue(100);
 
