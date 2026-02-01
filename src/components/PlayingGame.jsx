@@ -29,9 +29,7 @@ export default function PlayingGame({
   });
 
   const handleAnswer = async (option) => {
-    if (isSubmitting || answered || timeLeft === 0) {
-      return;
-    }
+    if (isSubmitting || answered) return;
 
     setIsSubmitting(true);
 
@@ -43,7 +41,7 @@ export default function PlayingGame({
     }
   };
 
-  const isDisabled = answered || timeLeft === 0 || isSubmitting;
+  const isDisabled = answered || isSubmitting;
 
   return (
     <div className="min-h-screen bg-white flex flex-col">

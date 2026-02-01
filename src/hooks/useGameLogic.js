@@ -132,7 +132,7 @@ export function useGameLogic(roomCode, playerName) {
           advanceLock: false,
         });
       }, 500);
-    }, 1000);
+    }, 200);
 
     return () => clearTimeout(advanceTimer);
   }, [timeLeft, room, roomCode, onlinePlayers]);
