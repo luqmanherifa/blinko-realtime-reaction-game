@@ -4,7 +4,7 @@ export const HEARTBEAT_INTERVAL = 3000;
 
 export const QUESTIONS = [
   // ==========================================
-  // CATEGORY 1: NUMBER RUSH (1-5)
+  // CATEGORY 1: NUMBER RUSH (Questions 1-5)
   // ==========================================
   {
     q: "ANGKA LEBIH BESAR",
@@ -33,7 +33,7 @@ export const QUESTIONS = [
   },
 
   // ==========================================
-  // CATEGORY 2: QUICK MATH (6-10)
+  // CATEGORY 2: QUICK MATH
   // ==========================================
   {
     q: "2 + 3 = ?",
@@ -62,7 +62,7 @@ export const QUESTIONS = [
   },
 
   // ==========================================
-  // CATEGORY 3: COUNT IT (11-15)
+  // CATEGORY 3: COUNT IT (Questions 11-15)
   // ==========================================
   {
     q: "HITUNG: ●●●●●",
@@ -91,7 +91,7 @@ export const QUESTIONS = [
   },
 
   // ==========================================
-  // CATEGORY 4: COLOR BLAST (16-20)
+  // CATEGORY 4: COLOR BLAST (Questions 16-20)
   // ==========================================
   {
     q: "WARNA MERAH?",
@@ -120,84 +120,84 @@ export const QUESTIONS = [
   },
 
   // ==========================================
-  // CATEGORY 5: SHAPE SNAP (21-25)
+  // CATEGORY 5: QUICK CATEGORY (Questions 21-25)
   // ==========================================
   {
-    q: "PILIH LINGKARAN",
-    options: ["■", "●"],
-    correct: "●",
+    q: "MANA BUAH?",
+    options: ["🚗", "🍎"],
+    correct: "🍎",
   },
   {
-    q: "PILIH PERSEGI",
-    options: ["■", "●"],
-    correct: "■",
+    q: "MANA HEWAN?",
+    options: ["🐶", "💻"],
+    correct: "🐶",
   },
   {
-    q: "PILIH SEGITIGA",
-    options: ["●", "▲"],
-    correct: "▲",
+    q: "BISA TERBANG?",
+    options: ["🚗", "✈️"],
+    correct: "✈️",
   },
   {
-    q: "PILIH BINTANG",
-    options: ["★", "●"],
-    correct: "★",
+    q: "BISA DIMAKAN?",
+    options: ["🍕", "⚽"],
+    correct: "🍕",
   },
   {
-    q: "PILIH HATI",
-    options: ["★", "♥"],
-    correct: "♥",
+    q: "YANG HIDUP?",
+    options: ["🪨", "🌳"],
+    correct: "🌳",
   },
 
   // ==========================================
-  // CATEGORY 6: ARROW RUSH (26-30)
+  // CATEGORY 6: EMOJI BATTLE (Questions 26-30)
   // ==========================================
   {
-    q: "PANAH KE KANAN",
-    options: ["→", "←"],
-    correct: "→",
+    q: "LEBIH CEPAT?",
+    options: ["🚀", "🐌"],
+    correct: "🚀",
   },
   {
-    q: "PANAH KE KIRI",
-    options: ["→", "←"],
-    correct: "←",
+    q: "LEBIH PANAS?",
+    options: ["❄️", "🔥"],
+    correct: "🔥",
   },
   {
-    q: "PANAH KE ATAS",
-    options: ["↑", "↓"],
-    correct: "↑",
+    q: "LEBIH BERAT?",
+    options: ["🐘", "🐁"],
+    correct: "🐘",
   },
   {
-    q: "PANAH KE BAWAH",
-    options: ["↑", "↓"],
-    correct: "↓",
+    q: "LEBIH TINGGI?",
+    options: ["🏠", "🏔️"],
+    correct: "🏔️",
   },
   {
-    q: "PANAH DIAGONAL KANAN",
-    options: ["↙", "↗"],
-    correct: "↗",
+    q: "LEBIH TERANG?",
+    options: ["💡", "🌑"],
+    correct: "💡",
   },
 
   // ==========================================
-  // CATEGORY 7: PATTERN NEXT (31-35)
+  // CATEGORY 7: PATTERN NEXT (Questions 31-35)
   // ==========================================
   {
     q: "1 - 2 - 3 - ?",
-    options: ["4", "5"],
+    options: ["5", "4"],
     correct: "4",
   },
   {
     q: "A - B - C - ?",
-    options: ["E", "D"],
+    options: ["D", "E"],
     correct: "D",
   },
   {
     q: "● ● ○ ● ● ?",
-    options: ["○", "●"],
+    options: ["●", "○"],
     correct: "○",
   },
   {
     q: "🔴 🔵 🔴 🔵 ?",
-    options: ["🔵", "🔴"],
+    options: ["🔴", "🔵"],
     correct: "🔴",
   },
   {
@@ -207,89 +207,89 @@ export const QUESTIONS = [
   },
 
   // ==========================================
-  // CATEGORY 8: SAME or DIFF (36-40)
+  // CATEGORY 8: SPOT THE ODD (Questions 36-40)
   // ==========================================
   {
-    q: "PILIH YANG SAMA",
-    options: ["▲ ●", "▲ ▲"],
-    correct: "▲ ▲",
+    q: "YANG BERBEDA?",
+    options: ["🍎 🍊 🚗", "🍎 🍊 🍌"],
+    correct: "🍎 🍊 🚗",
   },
   {
-    q: "PILIH YANG BEDA",
-    options: ["● ● ○", "● ● ●"],
+    q: "TIDAK COCOK?",
+    options: ["🔴 🔵 🚀", "🔴 🔵 🟢"],
+    correct: "🔴 🔵 🚀",
+  },
+  {
+    q: "CARI YANG BEDA",
+    options: ["● ● ●", "● ● ○"],
     correct: "● ● ○",
   },
   {
-    q: "WARNA SAMA?",
-    options: ["🔴 🔵", "🔴 🔴"],
-    correct: "🔴 🔴",
+    q: "MANA YANG ANEH?",
+    options: ["1 2 3 4", "1 2 3 A"],
+    correct: "1 2 3 A",
   },
   {
-    q: "BENTUK SAMA?",
-    options: ["■ ■", "■ ●"],
-    correct: "■ ■",
-  },
-  {
-    q: "ARAH SAMA?",
-    options: ["→ ←", "→ →"],
-    correct: "→ →",
+    q: "YANG SALAH?",
+    options: ["🐶 🐱 🚗", "🐶 🐱 🐭"],
+    correct: "🐶 🐱 🚗",
   },
 
   // ==========================================
-  // CATEGORY 9: SYMBOL SPEED (41-45)
+  // CATEGORY 9: ARROW RUSH (Questions 41-45)
   // ==========================================
   {
-    q: "PILIH PLUS",
-    options: ["✚", "✕"],
-    correct: "✚",
+    q: "PANAH KE KANAN",
+    options: ["←", "→"],
+    correct: "→",
   },
   {
-    q: "PILIH CENTANG",
-    options: ["✕", "✓"],
-    correct: "✓",
+    q: "PANAH KE KIRI",
+    options: ["←", "→"],
+    correct: "←",
   },
   {
-    q: "PILIH SILANG",
-    options: ["✕", "✓"],
-    correct: "✕",
+    q: "PANAH KE ATAS",
+    options: ["↑", "↓"],
+    correct: "↑",
   },
   {
-    q: "PILIH YANG PENUH",
-    options: ["○", "●"],
-    correct: "●",
+    q: "PANAH KE BAWAH",
+    options: ["↓", "↑"],
+    correct: "↓",
   },
   {
-    q: "PILIH YANG KOSONG",
-    options: ["○", "●"],
-    correct: "○",
+    q: "PANAH DIAGONAL KANAN",
+    options: ["↙", "↗"],
+    correct: "↗",
   },
 
   // ==========================================
-  // CATEGORY 10: POSITION SNAP (46-50)
+  // CATEGORY 10: EMOJI PAIR (Questions 46-50)
   // ==========================================
   {
-    q: "SIMBOL DI KIRI",
-    options: ["○ ●", "● ○"],
-    correct: "● ○",
+    q: "PASANGAN: ☀️",
+    options: ["🌞", "🌙"],
+    correct: "🌙",
   },
   {
-    q: "SIMBOL DI KANAN",
-    options: ["○ ●", "● ○"],
-    correct: "○ ●",
+    q: "COCOK: 🔥",
+    options: ["💧", "🌳"],
+    correct: "💧",
   },
   {
-    q: "SEGITIGA ATAS",
-    options: ["▼", "▲"],
-    correct: "▲",
+    q: "HUBUNGAN: 🐝",
+    options: ["🍯", "🌸"],
+    correct: "🍯",
   },
   {
-    q: "SEGITIGA BAWAH",
-    options: ["▼", "▲"],
-    correct: "▼",
+    q: "PASANGAN: 🔑",
+    options: ["🚪", "🔓"],
+    correct: "🔓",
   },
   {
-    q: "PANAH KANAN",
-    options: ["◀", "▶"],
-    correct: "▶",
+    q: "COCOK: ☕",
+    options: ["🥤", "🍵"],
+    correct: "🍵",
   },
 ];
