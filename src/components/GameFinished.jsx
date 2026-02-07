@@ -131,7 +131,7 @@ export default function GameFinished({
           </p>
         </div>
 
-        {/* Final Leaderboard */}
+        {/* Leaderboard */}
         <div className="bg-white border-2 border-indigospark/20 rounded-2xl p-6 mb-8">
           <div className="flex items-center gap-2 mb-4 text-sm font-bold font-heading text-slate-500 uppercase tracking-wide">
             <TrophyIcon className="w-5 h-5 text-yellowpulse" />

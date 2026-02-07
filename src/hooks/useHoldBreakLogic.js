@@ -13,7 +13,6 @@ import { ONLINE_THRESHOLD, HEARTBEAT_INTERVAL } from "../constants";
 export function useHoldBreakLogic(roomCode, playerName) {
   const [room, setRoom] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(0);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -28,12 +27,10 @@ export function useHoldBreakLogic(roomCode, playerName) {
         name: playerName,
         joinedAt: Date.now(),
         lastActiveAt: Date.now(),
-        choice: null,
-        choiceAt: null,
-        declared: false,
-        declaredChoice: null,
+        breakAt: null,
+        declared: null,
         declaredAt: null,
-        finalScore: null,
+        phaseScore: null,
         totalScore: 0,
       },
       { merge: true },
@@ -78,26 +75,14 @@ export function useHoldBreakLogic(roomCode, playerName) {
   useEffect(() => {
     if (!room || room.status !== "playing") return;
 
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - room.phaseStartAt;
-      const remaining = room.phaseDuration - elapsed;
-      setTimeLeft(Math.max(0, Math.ceil(remaining / 1000)));
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [room]);
-
-  useEffect(() => {
-    if (!room || room.status !== "playing") return;
-
     const checkEndPhase = async () => {
       const elapsed = Date.now() - room.phaseStartAt;
       const timeUp = elapsed >= room.phaseDuration;
-      const bothChosen =
+      const bothBroke =
         onlinePlayers.length === 2 &&
-        onlinePlayers.every((p) => p.choice !== null && p.choice !== undefined);
+        onlinePlayers.every((p) => p.breakAt !== null);
 
-      if (timeUp || bothChosen) {
+      if (timeUp || bothBroke) {
         await calculateHoldBreakResults(roomCode, onlinePlayers);
 
         const updatedPlayers = await Promise.all(
@@ -110,9 +95,10 @@ export function useHoldBreakLogic(roomCode, playerName) {
         );
 
         const hasWinner = updatedPlayers.some((p) => p.totalScore >= 5);
+        const hasLoser = updatedPlayers.some((p) => p.totalScore <= -5);
 
         await updateDoc(doc(db, "rooms", roomCode), {
-          status: hasWinner ? "finished" : "phaseResult",
+          status: hasWinner || hasLoser ? "finished" : "phaseResult",
         });
       }
     };
@@ -123,7 +109,7 @@ export function useHoldBreakLogic(roomCode, playerName) {
   }, [room, roomCode, onlinePlayers]);
 
   const startGame = async () => {
-    const phaseDuration = 60000 + Math.random() * 30000;
+    const phaseDuration = 8000 + Math.random() * 7000;
 
     await updateDoc(doc(db, "rooms", roomCode), {
       status: "playing",
@@ -141,28 +127,24 @@ export function useHoldBreakLogic(roomCode, playerName) {
 
     players.forEach((p) => {
       updateDoc(doc(db, "rooms", roomCode, "players", p.id), {
-        choice: null,
-        choiceAt: null,
-        declared: false,
-        declaredChoice: null,
+        breakAt: null,
+        declared: null,
         declaredAt: null,
-        finalScore: null,
+        phaseScore: null,
         totalScore: 0,
       });
     });
   };
 
   const nextPhase = async () => {
-    const phaseDuration = 60000 + Math.random() * 30000;
+    const phaseDuration = 8000 + Math.random() * 7000;
 
     players.forEach((p) => {
       updateDoc(doc(db, "rooms", roomCode, "players", p.id), {
-        choice: null,
-        choiceAt: null,
-        declared: false,
-        declaredChoice: null,
+        breakAt: null,
+        declared: null,
         declaredAt: null,
-        finalScore: null,
+        phaseScore: null,
       });
     });
 
@@ -177,7 +159,6 @@ export function useHoldBreakLogic(roomCode, playerName) {
     room,
     players,
     onlinePlayers,
-    timeLeft,
     startGame,
     resetRoom,
     nextPhase,
@@ -189,35 +170,12 @@ async function calculateHoldBreakResults(roomCode, players) {
 
   const [p1, p2] = players;
 
-  if (!p1.choice) {
-    await updatePlayerScore(roomCode, p1.id, -1);
-    await updatePlayerScore(roomCode, p2.id, p2.choice ? 2 : -1);
+  const { winner, loser } = determineWinner(p1, p2);
+
+  if (winner === null) {
+    await updatePlayerScore(roomCode, p1.id, 0);
+    await updatePlayerScore(roomCode, p2.id, 0);
     return;
-  }
-
-  if (!p2.choice) {
-    await updatePlayerScore(roomCode, p1.id, 2);
-    await updatePlayerScore(roomCode, p2.id, -1);
-    return;
-  }
-
-  let winner = null;
-  let loser = null;
-
-  if (p1.choice === "BREAK" && p2.choice === "HOLD") {
-    winner = p1;
-    loser = p2;
-  } else if (p1.choice === "HOLD" && p2.choice === "BREAK") {
-    winner = p2;
-    loser = p1;
-  } else if (p1.choice === p2.choice) {
-    if (p1.choiceAt > p2.choiceAt) {
-      winner = p1;
-      loser = p2;
-    } else {
-      winner = p2;
-      loser = p1;
-    }
   }
 
   const winnerScore = calculateScore(winner, true);
@@ -227,22 +185,41 @@ async function calculateHoldBreakResults(roomCode, players) {
   await updatePlayerScore(roomCode, loser.id, loserScore);
 }
 
+function determineWinner(p1, p2) {
+  const p1Broke = p1.breakAt !== null;
+  const p2Broke = p2.breakAt !== null;
+
+  if (!p1Broke && !p2Broke) {
+    return { winner: null, loser: null };
+  }
+
+  if (p1Broke && !p2Broke) {
+    return { winner: p1, loser: p2 };
+  }
+  if (!p1Broke && p2Broke) {
+    return { winner: p2, loser: p1 };
+  }
+
+  if (p1.breakAt > p2.breakAt) {
+    return { winner: p1, loser: p2 };
+  } else {
+    return { winner: p2, loser: p1 };
+  }
+}
+
 function calculateScore(player, isWinner) {
-  if (!player.choice) return -1;
+  const actualAction = player.breakAt ? "BREAK" : "HOLD";
+  const isHonest = player.declared === actualAction;
+  const isSilent = !player.declared;
+  const isLiar = player.declared && !isHonest;
 
-  if (!isWinner) {
-    if (player.declared && player.declaredChoice !== player.choice) {
-      return -1;
-    }
+  if (isWinner) {
+    if (isHonest) return 2;
+    if (isSilent) return 1;
+    if (isLiar) return 0;
+  } else {
+    if (isLiar) return -1;
     return 0;
-  }
-
-  if (player.declared && player.declaredChoice === player.choice) {
-    return 2;
-  }
-
-  if (!player.declared) {
-    return 1;
   }
 
   return 0;
@@ -254,7 +231,7 @@ async function updatePlayerScore(roomCode, playerId, score) {
   const currentTotal = playerSnap.data()?.totalScore || 0;
 
   await updateDoc(playerRef, {
-    finalScore: score,
+    phaseScore: score,
     totalScore: currentTotal + score,
   });
 }
