@@ -122,30 +122,20 @@ export default function RoomSelector({
                 <label className="text-sm font-bold font-heading text-indigospark px-2">
                   Mode Permainan
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setGameMode("dontblink")}
-                    className={`py-3 px-4 rounded-xl font-bold font-heading text-sm transition-colors ${
-                      gameMode === "dontblink"
-                        ? "bg-indigospark text-white"
-                        : "bg-white text-indigospark border-2 border-indigospark/30 hover:bg-yellowpulse/10"
-                    }`}
-                  >
-                    Don't Blink
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setGameMode("holdbreak")}
-                    className={`py-3 px-4 rounded-xl font-bold font-heading text-sm transition-colors ${
-                      gameMode === "holdbreak"
-                        ? "bg-indigospark text-white"
-                        : "bg-white text-indigospark border-2 border-indigospark/30 hover:bg-yellowpulse/10"
-                    }`}
-                  >
-                    Hold/Break
-                  </button>
-                </div>
+                <select
+                  value={gameMode}
+                  onChange={(e) => setGameMode(e.target.value)}
+                  className="w-full px-5 py-4 pr-12 text-base text-indigonight border-2 border-indigospark/30 rounded-2xl focus:border-indigospark outline-none transition-colors bg-white appearance-none cursor-pointer"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234338ca' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "right 1rem center",
+                    backgroundSize: "20px",
+                  }}
+                >
+                  <option value="dontblink">Don't Blink - Jawab cepat</option>
+                  <option value="holdbreak">Hold/Break - Strategi</option>
+                </select>
               </div>
 
               <input
