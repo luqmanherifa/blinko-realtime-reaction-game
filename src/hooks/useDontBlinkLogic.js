@@ -17,7 +17,7 @@ import {
 } from "../constants";
 import { shuffleArray } from "../utils/shuffle";
 
-export function useGameLogic(roomCode, playerName) {
+export function useDontBlinkLogic(roomCode, playerName) {
   const [room, setRoom] = useState(null);
   const [players, setPlayers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0);

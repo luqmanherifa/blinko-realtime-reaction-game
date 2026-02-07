@@ -13,7 +13,8 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { getPlayerData, savePlayerData } from "./utils/player";
-import { useGameLogic } from "./hooks/useGameLogic";
+import { useDontBlinkLogic } from "./hooks/useDontBlinkLogic";
+import { useHoldBreakLogic } from "./hooks/useHoldBreakLogic";
 import LoginForm from "./components/LoginForm";
 import RoomSelector from "./components/RoomSelector";
 import WaitingRoom from "./components/WaitingRoom";
@@ -25,21 +26,42 @@ export default function App() {
   const [playerName, setPlayerName] = useState(null);
   const [originalName, setOriginalName] = useState(null);
   const [roomCode, setRoomCode] = useState(null);
+  const [gameMode, setGameMode] = useState(null);
   const [isGameMaster, setIsGameMaster] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const {
-    room,
-    onlinePlayers,
-    timeLeft,
-    answered,
-    shuffledQuestions,
-    startGame,
-    resetRoom,
-    answer,
-  } = useGameLogic(roomCode, playerName);
+  useEffect(() => {
+    if (!roomCode) {
+      setGameMode(null);
+      return;
+    }
+
+    return onSnapshot(doc(db, "rooms", roomCode), (snap) => {
+      if (snap.exists()) {
+        setGameMode(snap.data().gameMode);
+      }
+    });
+  }, [roomCode]);
+
+  const dontBlinkLogic = useDontBlinkLogic(
+    gameMode === "dontblink" ? roomCode : null,
+    playerName,
+  );
+
+  const holdBreakLogic = useHoldBreakLogic(
+    gameMode === "holdbreak" ? roomCode : null,
+    playerName,
+  );
+
+  const gameLogic = gameMode === "dontblink" ? dontBlinkLogic : holdBreakLogic;
+
+  const { room, onlinePlayers, timeLeft, startGame, resetRoom, nextPhase } =
+    gameLogic;
+
+  const { answered, shuffledQuestions, answer } =
+    gameMode === "dontblink" ? dontBlinkLogic : {};
 
   useEffect(() => {
     const data = getPlayerData();
@@ -107,7 +129,7 @@ export default function App() {
     }
   };
 
-  const handleCreateRoom = async (roomName, code) => {
+  const handleCreateRoom = async (roomName, code, selectedGameMode) => {
     try {
       const roomRef = doc(db, "rooms", code);
       const roomSnap = await getDoc(roomRef);
@@ -117,16 +139,29 @@ export default function App() {
         return;
       }
 
-      await setDoc(roomRef, {
+      const baseRoomData = {
         code: code,
         roomName: roomName,
         gameMaster: playerName,
+        gameMode: selectedGameMode,
         status: "waiting",
-        currentQuestion: 0,
-        questionStartAt: null,
-        shuffledQuestionIndexes: null,
         createdAt: Date.now(),
-      });
+      };
+
+      if (selectedGameMode === "dontblink") {
+        await setDoc(roomRef, {
+          ...baseRoomData,
+          currentQuestion: 0,
+          questionStartAt: null,
+          shuffledQuestionIndexes: null,
+        });
+      } else if (selectedGameMode === "holdbreak") {
+        await setDoc(roomRef, {
+          ...baseRoomData,
+          phaseStartAt: null,
+          phaseDuration: null,
+        });
+      }
 
       setRoomCode(code);
       setIsGameMaster(true);
@@ -146,8 +181,15 @@ export default function App() {
         return;
       }
 
+      const roomData = roomSnap.data();
+
+      if (roomData.status === "playing") {
+        alert("Permainan sudah dimulai!");
+        return;
+      }
+
       setRoomCode(code);
-      setIsGameMaster(false);
+      setIsGameMaster(roomData.gameMaster === playerName);
     } catch (error) {
       console.error("Error joining room:", error);
       alert("Gagal gabung arena. Cek kode dan coba lagi.");
@@ -156,6 +198,7 @@ export default function App() {
 
   const leaveRoom = () => {
     setRoomCode(null);
+    setGameMode(null);
     setIsGameMaster(false);
   };
 
@@ -207,6 +250,7 @@ export default function App() {
   if (room.status === "finished") {
     return (
       <GameFinished
+        room={room}
         onlinePlayers={onlinePlayers}
         playerName={playerName}
         resetRoom={resetRoom}
@@ -225,6 +269,7 @@ export default function App() {
       answered={answered}
       shuffledQuestions={shuffledQuestions}
       answer={answer}
+      nextPhase={nextPhase}
     />
   );
 }
