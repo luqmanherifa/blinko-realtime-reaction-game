@@ -60,8 +60,8 @@ export default function HoldBreakPhaseResult({
     const score = player?.phaseScore || 0;
     if (score > 0) {
       return (
-        <div className="inline-block bg-green-100 border-2 border-green-400 rounded-xl px-3 py-1">
-          <p className="text-xs font-bold font-heading text-green-700">
+        <div className="inline-block bg-green-100 border border-green-400 rounded-lg px-2 py-0.5">
+          <p className="text-[10px] font-bold font-heading text-green-700">
             MENANG
           </p>
         </div>
@@ -69,63 +69,67 @@ export default function HoldBreakPhaseResult({
     }
     if (score < 0) {
       return (
-        <div className="inline-block bg-red-100 border-2 border-red-400 rounded-xl px-3 py-1">
-          <p className="text-xs font-bold font-heading text-red-700">KALAH</p>
+        <div className="inline-block bg-red-100 border border-red-400 rounded-lg px-2 py-0.5">
+          <p className="text-[10px] font-bold font-heading text-red-700">
+            KALAH
+          </p>
         </div>
       );
     }
     return (
-      <div className="inline-block bg-slate-100 border-2 border-slate-300 rounded-xl px-3 py-1">
-        <p className="text-xs font-bold font-heading text-slate-600">SERI</p>
+      <div className="inline-block bg-slate-100 border border-slate-300 rounded-lg px-2 py-0.5">
+        <p className="text-[10px] font-bold font-heading text-slate-600">
+          SERI
+        </p>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
         {/* Countdown */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-center mb-6"
+          className="text-center mb-3"
         >
-          <div className="inline-block bg-yellowpulse/20 rounded-2xl px-6 py-3 border-2 border-yellowpulse">
-            <p className="text-sm font-bold font-heading text-indigospark">
+          <div className="inline-block bg-yellowpulse/20 rounded-xl px-4 py-1.5 border border-yellowpulse">
+            <p className="text-xs font-bold font-heading text-indigospark">
               Phase berikutnya dalam {countdown}...
             </p>
           </div>
         </motion.div>
 
         {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-extrabold font-heading text-indigospark mb-1">
+        <div className="text-center mb-3">
+          <h2 className="text-xl font-extrabold font-heading text-indigospark mb-0.5">
             Hasil Phase
           </h2>
-          <p className="text-slate-500 text-sm">Reveal</p>
+          <p className="text-slate-500 text-xs">Reveal</p>
         </div>
 
         {/* Results Cards */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-2 mb-3">
           <motion.div
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-white border-2 border-indigospark rounded-2xl p-5"
+            className="bg-white border-2 border-indigospark rounded-xl p-3"
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <div>
-                <p className="text-xs font-bold font-heading text-slate-500 mb-1">
+                <p className="text-[10px] font-bold font-heading text-slate-500 mb-0.5">
                   Kamu
                 </p>
-                <p className="text-lg font-extrabold font-heading text-indigospark">
+                <p className="text-sm font-extrabold font-heading text-indigospark">
                   {me?.name}
                 </p>
               </div>
               <div className="text-right">
                 {getResultBadge(me, true)}
                 <p
-                  className={`text-2xl font-extrabold font-heading mt-1 ${getScoreColor(me?.phaseScore || 0)}`}
+                  className={`text-xl font-extrabold font-heading mt-0.5 ${getScoreColor(me?.phaseScore || 0)}`}
                 >
                   {me?.phaseScore >= 0 ? "+" : ""}
                   {me?.phaseScore || 0}
@@ -133,31 +137,31 @@ export default function HoldBreakPhaseResult({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-slate-50 rounded-lg p-2">
-                <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+            <div className="grid grid-cols-3 gap-1.5 text-center">
+              <div className="bg-slate-50 rounded-lg p-1.5">
+                <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                   Aksi
                 </p>
-                <p className="text-xs font-extrabold font-heading text-indigospark">
+                <p className="text-[11px] font-extrabold font-heading text-indigospark">
                   {getAction(me)}
                 </p>
               </div>
 
-              <div className="bg-slate-50 rounded-lg p-2">
-                <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+              <div className="bg-slate-50 rounded-lg p-1.5">
+                <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                   Deklarasi
                 </p>
-                <p className="text-xs font-extrabold font-heading text-indigospark">
+                <p className="text-[11px] font-extrabold font-heading text-indigospark">
                   {me?.declared || "—"}
                 </p>
               </div>
 
-              <div className="bg-slate-50 rounded-lg p-2">
-                <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+              <div className="bg-slate-50 rounded-lg p-1.5">
+                <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                   Status
                 </p>
                 <p
-                  className={`text-xs font-extrabold font-heading ${getHonestyColor(me)}`}
+                  className={`text-[11px] font-extrabold font-heading ${getHonestyColor(me)}`}
                 >
                   {getHonestyLabel(me)}
                 </p>
@@ -171,21 +175,21 @@ export default function HoldBreakPhaseResult({
               initial={{ rotateY: 90, opacity: 0 }}
               animate={{ rotateY: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.3 }}
-              className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5"
+              className="bg-slate-50 border-2 border-slate-200 rounded-xl p-3"
             >
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-xs font-bold font-heading text-slate-500 mb-1">
+                  <p className="text-[10px] font-bold font-heading text-slate-500 mb-0.5">
                     Lawan
                   </p>
-                  <p className="text-lg font-extrabold font-heading text-slate-700">
+                  <p className="text-sm font-extrabold font-heading text-slate-700">
                     {opponent.name}
                   </p>
                 </div>
                 <div className="text-right">
                   {getResultBadge(opponent, false)}
                   <p
-                    className={`text-2xl font-extrabold font-heading mt-1 ${getScoreColor(opponent.phaseScore || 0)}`}
+                    className={`text-xl font-extrabold font-heading mt-0.5 ${getScoreColor(opponent.phaseScore || 0)}`}
                   >
                     {opponent.phaseScore >= 0 ? "+" : ""}
                     {opponent.phaseScore || 0}
@@ -193,31 +197,31 @@ export default function HoldBreakPhaseResult({
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-white rounded-lg p-2">
-                  <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+              <div className="grid grid-cols-3 gap-1.5 text-center">
+                <div className="bg-white rounded-lg p-1.5">
+                  <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                     Aksi
                   </p>
-                  <p className="text-xs font-extrabold font-heading text-slate-700">
+                  <p className="text-[11px] font-extrabold font-heading text-slate-700">
                     {getAction(opponent)}
                   </p>
                 </div>
 
-                <div className="bg-white rounded-lg p-2">
-                  <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+                <div className="bg-white rounded-lg p-1.5">
+                  <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                     Deklarasi
                   </p>
-                  <p className="text-xs font-extrabold font-heading text-slate-700">
+                  <p className="text-[11px] font-extrabold font-heading text-slate-700">
                     {opponent.declared || "—"}
                   </p>
                 </div>
 
-                <div className="bg-white rounded-lg p-2">
-                  <p className="text-[10px] font-bold font-heading text-slate-500 mb-1">
+                <div className="bg-white rounded-lg p-1.5">
+                  <p className="text-[9px] font-bold font-heading text-slate-500 mb-0.5">
                     Status
                   </p>
                   <p
-                    className={`text-xs font-extrabold font-heading ${getHonestyColor(opponent)}`}
+                    className={`text-[11px] font-extrabold font-heading ${getHonestyColor(opponent)}`}
                   >
                     {getHonestyLabel(opponent)}
                   </p>
@@ -232,26 +236,26 @@ export default function HoldBreakPhaseResult({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="bg-indigospark/5 border-2 border-indigospark/20 rounded-2xl p-4"
+          className="bg-indigospark/5 border-2 border-indigospark/20 rounded-xl p-3"
         >
-          <p className="text-xs font-bold font-heading text-slate-500 text-center mb-2">
+          <p className="text-[10px] font-bold font-heading text-slate-500 text-center mb-1.5">
             Skor Total Saat Ini
           </p>
           <div className="flex justify-around">
             <div className="text-center">
-              <p className="text-sm font-bold font-heading text-indigospark mb-1">
+              <p className="text-xs font-bold font-heading text-indigospark mb-0.5">
                 {me?.name}
               </p>
-              <p className="text-2xl font-extrabold font-heading text-indigospark">
+              <p className="text-xl font-extrabold font-heading text-indigospark">
                 {me?.totalScore || 0}
               </p>
             </div>
             <div className="w-px bg-slate-300"></div>
             <div className="text-center">
-              <p className="text-sm font-bold font-heading text-slate-700 mb-1">
+              <p className="text-xs font-bold font-heading text-slate-700 mb-0.5">
                 {opponent?.name}
               </p>
-              <p className="text-2xl font-extrabold font-heading text-slate-700">
+              <p className="text-xl font-extrabold font-heading text-slate-700">
                 {opponent?.totalScore || 0}
               </p>
             </div>

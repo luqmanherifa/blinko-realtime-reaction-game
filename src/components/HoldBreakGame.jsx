@@ -1,15 +1,36 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { TrophyIcon } from "./icons";
 
+const DeclareButton = ({ label, onClick, disabled }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className="py-1.5 bg-white text-indigospark rounded-lg font-bold font-heading border border-indigospark text-[10px] hover:bg-indigospark hover:text-white transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    {label}
+  </button>
+);
+
 export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
   const [canDeclare, setCanDeclare] = useState(true);
+  const [displayTime, setDisplayTime] = useState(0);
   const timeLeftRef = useRef(0);
 
-  const me = onlinePlayers.find((p) => p.id === playerName);
-  const opponent = onlinePlayers.find((p) => p.id !== playerName);
+  const me = useMemo(
+    () => onlinePlayers.find((p) => p.id === playerName),
+    [onlinePlayers, playerName],
+  );
+
+  const opponent = useMemo(
+    () => onlinePlayers.find((p) => p.id !== playerName),
+    [onlinePlayers, playerName],
+  );
+
+  const hasBreak = useMemo(() => !!me?.breakAt, [me?.breakAt]);
+  const hasDeclared = useMemo(() => !!me?.declared, [me?.declared]);
 
   const progressMV = useMotionValue(100);
 
@@ -27,6 +48,11 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
       const remaining = room.phaseDuration - elapsed;
       timeLeftRef.current = Math.max(0, remaining);
 
+      const newDisplayTime = Math.ceil(Math.max(0, remaining) / 1000);
+      setDisplayTime((prev) =>
+        prev !== newDisplayTime ? newDisplayTime : prev,
+      );
+
       const declareWindowEnd = room.phaseStartAt + room.phaseDuration * 0.5;
       const canDeclareNow = Date.now() < declareWindowEnd;
 
@@ -36,7 +62,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
     return () => clearInterval(interval);
   }, [room.phaseStartAt, room.phaseDuration]);
 
-  const handleBreak = async () => {
+  const handleBreak = useCallback(async () => {
     if (me?.breakAt) return;
 
     try {
@@ -46,23 +72,33 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
     } catch (error) {
       console.error("Error breaking:", error);
     }
-  };
+  }, [me?.breakAt, room.code, playerName]);
 
-  const handleDeclare = async (declaredChoice) => {
+  const handleDeclareHold = useCallback(async () => {
     if (me?.declared) return;
 
     try {
       await updateDoc(doc(db, "rooms", room.code, "players", playerName), {
-        declared: declaredChoice,
+        declared: "HOLD",
         declaredAt: Date.now(),
       });
     } catch (error) {
       console.error("Error declaring:", error);
     }
-  };
+  }, [me?.declared, room.code, playerName]);
 
-  const hasBreak = !!me?.breakAt;
-  const hasDeclared = !!me?.declared;
+  const handleDeclareBreak = useCallback(async () => {
+    if (me?.declared) return;
+
+    try {
+      await updateDoc(doc(db, "rooms", room.code, "players", playerName), {
+        declared: "BREAK",
+        declaredAt: Date.now(),
+      });
+    } catch (error) {
+      console.error("Error declaring:", error);
+    }
+  }, [me?.declared, room.code, playerName]);
 
   const Card = ({ children, className = "" }) => (
     <div
@@ -74,7 +110,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Timer Bar - Top */}
       <div className="bg-white border-b-2 border-slate-200 px-4 py-2">
         <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
@@ -118,9 +154,9 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
             </div>
           </div>
 
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 justify-center max-w-xs mx-auto">
             {/* Opponent's Declaration Card */}
-            <div style={{ width: "45%" }}>
+            <div style={{ width: "40%" }}>
               <Card className="border-slate-300 p-2 flex flex-col">
                 <div className="text-center mb-1">
                   <p className="text-[10px] font-bold font-heading text-slate-500">
@@ -144,7 +180,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
             </div>
 
             {/* Opponent's Break Card */}
-            <div style={{ width: "45%" }}>
+            <div style={{ width: "40%" }}>
               <Card className="border-slate-300 p-2 flex flex-col">
                 <div className="text-center mb-1">
                   <p className="text-[10px] font-bold font-heading text-slate-500">
@@ -165,12 +201,14 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
           </div>
         </div>
 
-        {/* Center Divider */}
+        {/* Center Divider with Timer */}
         <div className="flex items-center justify-center my-2">
           <div className="h-px bg-slate-300 flex-1"></div>
           <div className="px-4">
-            <div className="w-8 h-8 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+            <div className="w-10 h-10 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center">
+              <span className="text-sm font-bold font-heading text-indigospark">
+                {displayTime}
+              </span>
             </div>
           </div>
           <div className="h-px bg-slate-300 flex-1"></div>
@@ -178,9 +216,9 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
 
         {/* My Side - Bottom */}
         <div className="mt-4">
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 justify-center max-w-xs mx-auto">
             {/* My Declaration Card */}
-            <div style={{ width: "45%" }}>
+            <div style={{ width: "40%" }}>
               <Card className="border-indigospark p-2 flex flex-col">
                 <div className="text-center mb-1">
                   <p className="text-[10px] font-bold font-heading text-indigospark">
@@ -194,18 +232,16 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
                     </p>
                   ) : canDeclare && !hasBreak ? (
                     <div className="w-full grid grid-cols-1 gap-1">
-                      <button
-                        onClick={() => handleDeclare("HOLD")}
-                        className="py-1.5 bg-white text-indigospark rounded-lg font-bold font-heading border border-indigospark text-[10px] hover:bg-indigospark hover:text-white transition-colors active:scale-95"
-                      >
-                        HOLD
-                      </button>
-                      <button
-                        onClick={() => handleDeclare("BREAK")}
-                        className="py-1.5 bg-white text-indigospark rounded-lg font-bold font-heading border border-indigospark text-[10px] hover:bg-indigospark hover:text-white transition-colors active:scale-95"
-                      >
-                        BREAK
-                      </button>
+                      <DeclareButton
+                        label="HOLD"
+                        onClick={handleDeclareHold}
+                        disabled={hasDeclared}
+                      />
+                      <DeclareButton
+                        label="BREAK"
+                        onClick={handleDeclareBreak}
+                        disabled={hasDeclared}
+                      />
                     </div>
                   ) : (
                     <p className="text-[9px] font-bold font-heading text-slate-400 text-center px-1">
@@ -217,7 +253,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
             </div>
 
             {/* My Break Card */}
-            <div style={{ width: "45%" }}>
+            <div style={{ width: "40%" }}>
               <button
                 onClick={handleBreak}
                 disabled={hasBreak}
