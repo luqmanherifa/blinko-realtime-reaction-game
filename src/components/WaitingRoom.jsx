@@ -10,6 +10,8 @@ export default function WaitingRoom({
   leaveRoom,
 }) {
   const [copied, setCopied] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const canStartGame = onlinePlayers.length >= 2;
 
   const copyRoomCode = () => {
     navigator.clipboard.writeText(room.code);
@@ -90,13 +92,46 @@ export default function WaitingRoom({
         {/* Action Buttons */}
         <div className="space-y-3">
           {isGameMaster && (
-            <button
-              onClick={startGame}
-              className="w-full bg-indigospark text-white py-4 rounded-2xl font-bold font-heading text-base hover:bg-indigoflow active:bg-indigonight transition-colors flex items-center justify-center gap-2 border-2 border-indigospark"
-            >
-              <PlayIcon className="w-5 h-5 text-yellowpulse" />
-              Mulai Game
-            </button>
+            <div className="relative">
+              <button
+                onClick={canStartGame ? startGame : undefined}
+                disabled={!canStartGame}
+                className={`w-full py-4 rounded-2xl font-bold font-heading text-base transition-colors flex items-center justify-center gap-2 border-2 ${
+                  canStartGame
+                    ? "bg-indigospark text-white hover:bg-indigoflow active:bg-indigonight border-indigospark cursor-pointer"
+                    : "bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed"
+                }`}
+              >
+                <PlayIcon
+                  className={`w-5 h-5 ${canStartGame ? "text-yellowpulse" : "text-slate-400"}`}
+                />
+                Mulai Game
+                {!canStartGame && (
+                  <div
+                    className="relative inline-block"
+                    onMouseEnter={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 640 640"
+                      className="w-5 h-5 text-slate-500 ml-1"
+                      fill="currentColor"
+                    >
+                      <path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
+                    </svg>
+                    {showTooltip && (
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-indigonight text-white text-xs rounded-lg whitespace-nowrap shadow-lg z-10">
+                        Minimal 2 orang untuk mulai
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                          <div className="border-4 border-transparent border-t-indigonight"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </button>
+            </div>
           )}
           <button
             onClick={leaveRoom}
