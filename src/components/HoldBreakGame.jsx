@@ -16,7 +16,6 @@ const DeclareButton = ({ label, onClick, disabled }) => (
 
 export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
   const [canDeclare, setCanDeclare] = useState(true);
-  const [displayTime, setDisplayTime] = useState(0);
   const timeLeftRef = useRef(0);
 
   const me = useMemo(
@@ -47,11 +46,6 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
       const elapsed = Date.now() - room.phaseStartAt;
       const remaining = room.phaseDuration - elapsed;
       timeLeftRef.current = Math.max(0, remaining);
-
-      const newDisplayTime = Math.ceil(Math.max(0, remaining) / 1000);
-      setDisplayTime((prev) =>
-        prev !== newDisplayTime ? newDisplayTime : prev,
-      );
 
       const declareWindowEnd = room.phaseStartAt + room.phaseDuration * 0.5;
       const canDeclareNow = Date.now() < declareWindowEnd;
@@ -111,66 +105,42 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Timer Bar - Top */}
-      <div className="bg-white border-b-2 border-slate-200 px-4 py-2">
-        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-          <motion.div
-            key={room.phaseStartAt}
-            className="h-full"
-            style={{
-              backgroundColor: barColor,
-            }}
-            initial={{ width: "100%" }}
-            animate={{ width: "0%" }}
-            transition={{
-              duration: room.phaseDuration / 1000,
-              ease: "linear",
-            }}
-            onUpdate={(latest) => {
-              const percentage = (parseFloat(latest.width) / 100) * 100;
-              progressMV.set(percentage);
-            }}
-          />
-        </div>
-      </div>
-
       {/* Table View - Top Down */}
-      <div className="flex-1 flex flex-col justify-center px-4 py-4">
+      <div className="flex-1 flex flex-col justify-center px-4 py-6">
         {/* Opponent's Side - Top */}
-        <div className="mb-4">
-          {/* Opponent Info */}
-          <div className="mb-2 text-center">
-            <p className="text-[10px] font-bold font-heading text-slate-400 uppercase tracking-wide mb-1">
-              LAWAN
-            </p>
-            <p className="text-xs font-bold font-heading text-indigospark">
-              {opponent?.name || "Menunggu..."}
-            </p>
-            <div className="flex items-center justify-center gap-1 mt-0.5">
-              <TrophyIcon className="w-3 h-3 text-yellowpulse" />
-              <span className="text-sm font-bold font-heading text-indigospark">
-                {opponent?.totalScore || 0}
-              </span>
+        <div className="mb-6">
+          {/* Opponent Info - Single Line */}
+          <div className="mb-3 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-xs font-bold font-heading text-indigospark">
+                {opponent?.name || "Menunggu..."} (Lawan)
+              </p>
+              <div className="flex items-center gap-1">
+                <TrophyIcon className="w-3.5 h-3.5 text-yellowpulse" />
+                <span className="text-sm font-bold font-heading text-indigospark">
+                  {opponent?.totalScore || 0}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-2 justify-center max-w-xs mx-auto">
+          <div className="flex gap-3 justify-center max-w-md mx-auto">
             {/* Opponent's Declaration Card */}
-            <div style={{ width: "40%" }}>
-              <Card className="border-slate-300 p-2 flex flex-col">
-                <div className="text-center mb-1">
+            <div style={{ width: "45%" }}>
+              <Card className="border-slate-300 p-3 flex flex-col">
+                <div className="text-center mb-2">
                   <p className="text-[10px] font-bold font-heading text-slate-500">
                     DEKLARASI
                   </p>
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                   {opponent?.declared ? (
-                    <p className="text-lg font-bold font-heading text-indigospark">
+                    <p className="text-xl font-bold font-heading text-indigospark">
                       {opponent.declared}
                     </p>
                   ) : (
-                    <div className="bg-slate-200 rounded px-3 py-1">
-                      <p className="text-xs font-bold font-heading text-slate-400">
+                    <div className="bg-slate-200 rounded px-4 py-2">
+                      <p className="text-sm font-bold font-heading text-slate-400">
                         ???
                       </p>
                     </div>
@@ -180,18 +150,18 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
             </div>
 
             {/* Opponent's Break Card */}
-            <div style={{ width: "40%" }}>
-              <Card className="border-slate-300 p-2 flex flex-col">
-                <div className="text-center mb-1">
+            <div style={{ width: "45%" }}>
+              <Card className="border-slate-300 p-3 flex flex-col">
+                <div className="text-center mb-2">
                   <p className="text-[10px] font-bold font-heading text-slate-500">
                     BREAK
                   </p>
                 </div>
                 <div className="flex-1 flex items-center justify-center">
                   {opponent?.breakAt ? (
-                    <p className="text-2xl">✓</p>
+                    <p className="text-3xl">✓</p>
                   ) : (
-                    <p className="text-xs font-bold font-heading text-slate-400">
+                    <p className="text-sm font-bold font-heading text-slate-400">
                       -
                     </p>
                   )}
@@ -201,37 +171,49 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
           </div>
         </div>
 
-        {/* Center Divider with Timer */}
-        <div className="flex items-center justify-center my-2">
-          <div className="h-px bg-slate-300 flex-1"></div>
-          <div className="px-4">
-            <div className="w-10 h-10 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center">
-              <span className="text-sm font-bold font-heading text-indigospark">
-                {displayTime}
-              </span>
+        {/* Center Timer Bar */}
+        <div className="flex items-center justify-center my-0">
+          <div className="w-full max-w-md">
+            <div className="h-3 w-full bg-slate-200 rounded-full overflow-hidden">
+              <motion.div
+                key={room.phaseStartAt}
+                className="h-full"
+                style={{
+                  backgroundColor: barColor,
+                }}
+                initial={{ width: "100%" }}
+                animate={{ width: "0%" }}
+                transition={{
+                  duration: room.phaseDuration / 1000,
+                  ease: "linear",
+                }}
+                onUpdate={(latest) => {
+                  const percentage = (parseFloat(latest.width) / 100) * 100;
+                  progressMV.set(percentage);
+                }}
+              />
             </div>
           </div>
-          <div className="h-px bg-slate-300 flex-1"></div>
         </div>
 
         {/* My Side - Bottom */}
-        <div className="mt-4">
-          <div className="flex gap-2 justify-center max-w-xs mx-auto">
+        <div className="mt-6">
+          <div className="flex gap-3 justify-center max-w-md mx-auto">
             {/* My Declaration Card */}
-            <div style={{ width: "40%" }}>
-              <Card className="border-indigospark p-2 flex flex-col">
-                <div className="text-center mb-1">
+            <div style={{ width: "45%" }}>
+              <Card className="border-indigospark p-3 flex flex-col">
+                <div className="text-center mb-2">
                   <p className="text-[10px] font-bold font-heading text-indigospark">
                     DEKLARASI
                   </p>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {hasDeclared ? (
-                    <p className="text-lg font-bold font-heading text-indigospark">
+                    <p className="text-xl font-bold font-heading text-indigospark">
                       {me.declared}
                     </p>
                   ) : canDeclare && !hasBreak ? (
-                    <div className="w-full grid grid-cols-1 gap-1">
+                    <div className="w-full grid grid-cols-1 gap-1.5">
                       <DeclareButton
                         label="HOLD"
                         onClick={handleDeclareHold}
@@ -253,7 +235,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
             </div>
 
             {/* My Break Card */}
-            <div style={{ width: "40%" }}>
+            <div style={{ width: "45%" }}>
               <button
                 onClick={handleBreak}
                 disabled={hasBreak}
@@ -261,7 +243,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
                   w-full aspect-[5/7]
                   rounded-xl
                   border-2
-                  p-2
+                  p-3
                   flex flex-col
                   transition-all
                   ${
@@ -271,7 +253,7 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
                   }
                 `}
               >
-                <div className="text-center mb-1">
+                <div className="text-center mb-2">
                   <p
                     className={`text-[10px] font-bold font-heading ${hasBreak ? "text-slate-500" : "text-red-500"}`}
                   >
@@ -293,26 +275,25 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
                       }
                     `}
                   >
-                    <span className="text-xl">{hasBreak ? "✓" : "!"}</span>
+                    <span className="text-2xl">{hasBreak ? "✓" : "!"}</span>
                   </div>
                 </div>
               </button>
             </div>
           </div>
 
-          {/* My Info */}
-          <div className="mt-2 text-center">
-            <p className="text-[10px] font-bold font-heading text-yellowpulse uppercase tracking-wide mb-1">
-              KAMU
-            </p>
-            <p className="text-xs font-bold font-heading text-indigospark">
-              {me?.name}
-            </p>
-            <div className="flex items-center justify-center gap-1 mt-0.5">
-              <TrophyIcon className="w-3 h-3 text-yellowpulse" />
-              <span className="text-sm font-bold font-heading text-indigospark">
-                {me?.totalScore || 0}
-              </span>
+          {/* My Info - Single Line */}
+          <div className="mt-3 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-xs font-bold font-heading text-indigospark">
+                {me?.name} (Kamu)
+              </p>
+              <div className="flex items-center gap-1">
+                <TrophyIcon className="w-3.5 h-3.5 text-yellowpulse" />
+                <span className="text-sm font-bold font-heading text-indigospark">
+                  {me?.totalScore || 0}
+                </span>
+              </div>
             </div>
           </div>
         </div>
