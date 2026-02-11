@@ -137,6 +137,37 @@ export function useDontBlinkLogic(roomCode, playerName) {
     return () => clearTimeout(advanceTimer);
   }, [timeLeft, room, roomCode, onlinePlayers]);
 
+  useEffect(() => {
+    if (!roomCode || !room) return;
+
+    if (onlinePlayers.length === 0) {
+      const cleanupRoom = async () => {
+        try {
+          await updateDoc(doc(db, "rooms", roomCode), {
+            status: "finished",
+          });
+        } catch (error) {
+          console.error("Error cleaning up empty room:", error);
+        }
+      };
+      cleanupRoom();
+      return;
+    }
+
+    if (onlinePlayers.length === 1 && room.status === "playing") {
+      const finishGame = async () => {
+        try {
+          await updateDoc(doc(db, "rooms", roomCode), {
+            status: "finished",
+          });
+        } catch (error) {
+          console.error("Error finishing game with 1 player:", error);
+        }
+      };
+      finishGame();
+    }
+  }, [onlinePlayers.length, roomCode, room]);
+
   const startGame = async () => {
     const shuffled = shuffleArray(QUESTIONS);
     const shuffledIndexes = shuffled.map((q) => QUESTIONS.indexOf(q));

@@ -108,6 +108,37 @@ export function useHoldBreakLogic(roomCode, playerName) {
     return () => clearInterval(checkInterval);
   }, [room, roomCode, onlinePlayers]);
 
+  useEffect(() => {
+    if (!roomCode || !room) return;
+
+    if (onlinePlayers.length === 0) {
+      const cleanupRoom = async () => {
+        try {
+          await updateDoc(doc(db, "rooms", roomCode), {
+            status: "finished",
+          });
+        } catch (error) {
+          console.error("Error cleaning up empty room:", error);
+        }
+      };
+      cleanupRoom();
+      return;
+    }
+
+    if (onlinePlayers.length === 1 && room.status === "playing") {
+      const finishGame = async () => {
+        try {
+          await updateDoc(doc(db, "rooms", roomCode), {
+            status: "finished",
+          });
+        } catch (error) {
+          console.error("Error finishing game with 1 player:", error);
+        }
+      };
+      finishGame();
+    }
+  }, [onlinePlayers.length, roomCode, room]);
+
   const startGame = async () => {
     const phaseDuration = 8000 + Math.random() * 7000;
 

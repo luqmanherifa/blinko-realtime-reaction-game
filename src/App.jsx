@@ -82,6 +82,22 @@ export default function App() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!room || !roomCode) return;
+
+    if (
+      room.status === "finished" &&
+      onlinePlayers.length === 1 &&
+      !isGameMaster
+    ) {
+      const timer = setTimeout(() => {
+        leaveRoom();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [room, roomCode, onlinePlayers.length, isGameMaster]);
+
   const handleLogin = async (name) => {
     if (originalName && originalName !== name) {
       await renamePlayer(originalName, name);
