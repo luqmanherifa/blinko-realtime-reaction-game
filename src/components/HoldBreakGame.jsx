@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { TrophyIcon } from "./icons";
 
 export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
-  const [timeLeft, setTimeLeft] = useState(0);
   const [canDeclare, setCanDeclare] = useState(true);
-  const [showDeclareOptions, setShowDeclareOptions] = useState(false);
+  const timeLeftRef = useRef(0);
 
   const me = onlinePlayers.find((p) => p.id === playerName);
   const opponent = onlinePlayers.find((p) => p.id !== playerName);
@@ -20,28 +19,22 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
     return "#ef4444";
   });
 
-  const sortedPlayers = [...onlinePlayers].sort(
-    (a, b) => b.totalScore - a.totalScore,
-  );
-
   useEffect(() => {
     if (!room.phaseStartAt || !room.phaseDuration) return;
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - room.phaseStartAt;
       const remaining = room.phaseDuration - elapsed;
-      setTimeLeft(Math.max(0, remaining));
+      timeLeftRef.current = Math.max(0, remaining);
 
       const declareWindowEnd = room.phaseStartAt + room.phaseDuration * 0.5;
-      setCanDeclare(Date.now() < declareWindowEnd);
+      const canDeclareNow = Date.now() < declareWindowEnd;
+
+      setCanDeclare((prev) => (prev !== canDeclareNow ? canDeclareNow : prev));
     }, 100);
 
     return () => clearInterval(interval);
   }, [room.phaseStartAt, room.phaseDuration]);
-
-  useEffect(() => {
-    setShowDeclareOptions(false);
-  }, [room.phaseStartAt]);
 
   const handleBreak = async () => {
     if (me?.breakAt) return;
@@ -63,7 +56,6 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
         declared: declaredChoice,
         declaredAt: Date.now(),
       });
-      setShowDeclareOptions(false);
     } catch (error) {
       console.error("Error declaring:", error);
     }
@@ -72,10 +64,19 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
   const hasBreak = !!me?.breakAt;
   const hasDeclared = !!me?.declared;
 
+  const Card = ({ children, className = "" }) => (
+    <div
+      className={`bg-white border-2 rounded-xl aspect-[5/7] ${className}`}
+      style={{ width: "100%" }}
+    >
+      {children}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
       {/* Timer Bar - Top */}
-      <div className="bg-white border-b-2 border-slate-200 px-6 py-3">
+      <div className="bg-white border-b-2 border-slate-200 px-4 py-2">
         <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
           <motion.div
             key={room.phaseStartAt}
@@ -97,158 +98,185 @@ export default function HoldBreakGame({ room, onlinePlayers, playerName }) {
         </div>
       </div>
 
-      {/* Card Table Layout */}
-      <div className="flex-1 flex flex-col px-4 py-6">
-        {/* Opponent Card - Top */}
-        <div className="mb-6">
-          <div className="bg-white border-2 border-slate-300 rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-indigospark rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold font-heading text-sm">
-                    {opponent?.name?.charAt(0).toUpperCase() || "?"}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold font-heading text-indigospark">
-                    {opponent?.name || "Menunggu..."}
-                  </p>
-                  <p className="text-xs text-slate-500">Lawan</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <TrophyIcon className="w-4 h-4 text-yellowpulse" />
-                <span className="text-lg font-bold font-heading text-indigospark">
-                  {opponent?.totalScore || 0}
-                </span>
-              </div>
+      {/* Table View - Top Down */}
+      <div className="flex-1 flex flex-col justify-center px-4 py-4">
+        {/* Opponent's Side - Top */}
+        <div className="mb-4">
+          {/* Opponent Info */}
+          <div className="mb-2 text-center">
+            <p className="text-[10px] font-bold font-heading text-slate-400 uppercase tracking-wide mb-1">
+              LAWAN
+            </p>
+            <p className="text-xs font-bold font-heading text-indigospark">
+              {opponent?.name || "Menunggu..."}
+            </p>
+            <div className="flex items-center justify-center gap-1 mt-0.5">
+              <TrophyIcon className="w-3 h-3 text-yellowpulse" />
+              <span className="text-sm font-bold font-heading text-indigospark">
+                {opponent?.totalScore || 0}
+              </span>
             </div>
+          </div>
 
+          <div className="flex gap-2 justify-center">
             {/* Opponent's Declaration Card */}
-            <div className="border-2 border-slate-200 rounded-xl p-3 bg-slate-50 min-h-[60px] flex items-center justify-center">
-              {opponent?.declared ? (
-                <div className="text-center">
-                  <p className="text-xs text-slate-500 mb-1">Deklarasi</p>
-                  <p className="text-lg font-bold font-heading text-indigospark">
-                    {opponent.declared}
+            <div style={{ width: "45%" }}>
+              <Card className="border-slate-300 p-2 flex flex-col">
+                <div className="text-center mb-1">
+                  <p className="text-[10px] font-bold font-heading text-slate-500">
+                    DEKLARASI
                   </p>
                 </div>
-              ) : (
-                <div className="text-center">
-                  <div className="inline-block bg-slate-200 rounded-lg px-6 py-2">
-                    <p className="text-xs font-bold font-heading text-slate-400">
-                      ???
+                <div className="flex-1 flex items-center justify-center">
+                  {opponent?.declared ? (
+                    <p className="text-lg font-bold font-heading text-indigospark">
+                      {opponent.declared}
                     </p>
-                  </div>
+                  ) : (
+                    <div className="bg-slate-200 rounded px-3 py-1">
+                      <p className="text-xs font-bold font-heading text-slate-400">
+                        ???
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
+              </Card>
             </div>
-          </div>
-        </div>
 
-        {/* Center - Break Button */}
-        <div className="flex-1 flex items-center justify-center py-8">
-          <div className="text-center">
-            <button
-              onClick={handleBreak}
-              disabled={hasBreak}
-              className={`
-                w-48 h-48
-                rounded-3xl
-                flex flex-col items-center justify-center
-                font-extrabold font-heading
-                border-4
-                transition-all
-                ${
-                  hasBreak
-                    ? "bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed"
-                    : "bg-red-500 text-white border-red-600 hover:bg-red-600 active:scale-95"
-                }
-              `}
-            >
-              <span className="text-3xl mb-2">
-                {hasBreak ? "✓" : "B R E A K"}
-              </span>
-              <span className="text-xs font-normal">
-                {hasBreak ? "Sudah Break" : "Tekan untuk Break"}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* My Card - Bottom */}
-        <div className="mt-6">
-          <div className="bg-white border-2 border-indigospark rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-yellowpulse rounded-full flex items-center justify-center">
-                  <span className="text-indigospark font-bold font-heading text-sm">
-                    {me?.name?.charAt(0).toUpperCase() || "?"}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold font-heading text-indigospark">
-                    {me?.name}
+            {/* Opponent's Break Card */}
+            <div style={{ width: "45%" }}>
+              <Card className="border-slate-300 p-2 flex flex-col">
+                <div className="text-center mb-1">
+                  <p className="text-[10px] font-bold font-heading text-slate-500">
+                    BREAK
                   </p>
-                  <p className="text-xs text-slate-500">Kamu</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <TrophyIcon className="w-4 h-4 text-yellowpulse" />
-                <span className="text-lg font-bold font-heading text-indigospark">
-                  {me?.totalScore || 0}
-                </span>
-              </div>
+                <div className="flex-1 flex items-center justify-center">
+                  {opponent?.breakAt ? (
+                    <p className="text-2xl">✓</p>
+                  ) : (
+                    <p className="text-xs font-bold font-heading text-slate-400">
+                      -
+                    </p>
+                  )}
+                </div>
+              </Card>
             </div>
+          </div>
+        </div>
 
+        {/* Center Divider */}
+        <div className="flex items-center justify-center my-2">
+          <div className="h-px bg-slate-300 flex-1"></div>
+          <div className="px-4">
+            <div className="w-8 h-8 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+            </div>
+          </div>
+          <div className="h-px bg-slate-300 flex-1"></div>
+        </div>
+
+        {/* My Side - Bottom */}
+        <div className="mt-4">
+          <div className="flex gap-2 justify-center">
             {/* My Declaration Card */}
-            <div className="border-2 border-indigospark rounded-xl p-3 bg-indigospark/5 min-h-[60px]">
-              {hasDeclared ? (
-                <div className="text-center py-2">
-                  <p className="text-xs text-slate-500 mb-1">Deklarasi Kamu</p>
-                  <p className="text-lg font-bold font-heading text-indigospark">
-                    {me.declared}
+            <div style={{ width: "45%" }}>
+              <Card className="border-indigospark p-2 flex flex-col">
+                <div className="text-center mb-1">
+                  <p className="text-[10px] font-bold font-heading text-indigospark">
+                    DEKLARASI
                   </p>
                 </div>
-              ) : canDeclare && !hasBreak ? (
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setShowDeclareOptions(!showDeclareOptions)}
-                    className="w-full py-2 bg-yellowpulse text-indigospark rounded-lg font-bold font-heading border-2 border-yellowpulse hover:bg-yellowpulse/80 active:scale-95 transition-all text-sm"
-                  >
-                    {showDeclareOptions ? "BATAL" : "DEKLARASI"}
-                  </button>
-
-                  {showDeclareOptions && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="grid grid-cols-2 gap-2"
-                    >
+                <div className="flex-1 flex flex-col items-center justify-center">
+                  {hasDeclared ? (
+                    <p className="text-lg font-bold font-heading text-indigospark">
+                      {me.declared}
+                    </p>
+                  ) : canDeclare && !hasBreak ? (
+                    <div className="w-full grid grid-cols-1 gap-1">
                       <button
                         onClick={() => handleDeclare("HOLD")}
-                        className="py-2 bg-white text-indigospark rounded-lg font-bold font-heading border-2 border-indigospark hover:bg-indigospark/5 active:scale-95 transition-all text-sm"
+                        className="py-1.5 bg-white text-indigospark rounded-lg font-bold font-heading border border-indigospark text-[10px] hover:bg-indigospark hover:text-white transition-colors active:scale-95"
                       >
                         HOLD
                       </button>
                       <button
                         onClick={() => handleDeclare("BREAK")}
-                        className="py-2 bg-white text-indigospark rounded-lg font-bold font-heading border-2 border-indigospark hover:bg-indigospark/5 active:scale-95 transition-all text-sm"
+                        className="py-1.5 bg-white text-indigospark rounded-lg font-bold font-heading border border-indigospark text-[10px] hover:bg-indigospark hover:text-white transition-colors active:scale-95"
                       >
                         BREAK
                       </button>
-                    </motion.div>
+                    </div>
+                  ) : (
+                    <p className="text-[9px] font-bold font-heading text-slate-400 text-center px-1">
+                      {hasBreak ? "Tunggu..." : "Waktu habis"}
+                    </p>
                   )}
                 </div>
-              ) : (
-                <div className="text-center py-2">
-                  <p className="text-xs font-bold font-heading text-slate-400">
-                    {hasBreak
-                      ? "Tunggu phase selesai..."
-                      : "Waktu deklarasi habis"}
+              </Card>
+            </div>
+
+            {/* My Break Card */}
+            <div style={{ width: "45%" }}>
+              <button
+                onClick={handleBreak}
+                disabled={hasBreak}
+                className={`
+                  w-full aspect-[5/7]
+                  rounded-xl
+                  border-2
+                  p-2
+                  flex flex-col
+                  transition-all
+                  ${
+                    hasBreak
+                      ? "bg-white border-slate-300 cursor-not-allowed"
+                      : "bg-white border-red-500 hover:bg-red-50 active:scale-95"
+                  }
+                `}
+              >
+                <div className="text-center mb-1">
+                  <p
+                    className={`text-[10px] font-bold font-heading ${hasBreak ? "text-slate-500" : "text-red-500"}`}
+                  >
+                    BREAK
                   </p>
                 </div>
-              )}
+                <div className="flex-1 flex items-center justify-center">
+                  <div
+                    className={`
+                      w-full h-full
+                      rounded-lg
+                      flex items-center justify-center
+                      font-extrabold font-heading
+                      border-2
+                      ${
+                        hasBreak
+                          ? "bg-slate-200 text-slate-400 border-slate-300"
+                          : "bg-red-500 text-white border-red-600"
+                      }
+                    `}
+                  >
+                    <span className="text-xl">{hasBreak ? "✓" : "!"}</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* My Info */}
+          <div className="mt-2 text-center">
+            <p className="text-[10px] font-bold font-heading text-yellowpulse uppercase tracking-wide mb-1">
+              KAMU
+            </p>
+            <p className="text-xs font-bold font-heading text-indigospark">
+              {me?.name}
+            </p>
+            <div className="flex items-center justify-center gap-1 mt-0.5">
+              <TrophyIcon className="w-3 h-3 text-yellowpulse" />
+              <span className="text-sm font-bold font-heading text-indigospark">
+                {me?.totalScore || 0}
+              </span>
             </div>
           </div>
         </div>
